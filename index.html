@@ -265,12 +265,16 @@
 
         </div>
 
-        <div onclick="revealHint()" style="width: 200px; height: 30px; bottom: 15px; position: absolute; bottom: 210px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+        <div onclick="revealHint()" id="hintBtn" style="width: 200px; height: 30px; bottom: 15px; position: absolute; bottom: 210px; border-radius: 10px; display: none; justify-content: center; align-items: center; transition: 1s; opacity: 1;">
             <h1 class="sbmtBtn" style="transition: 1s; font-size: 22px; text-align: center; width: 100%; height: 100%; margin-top: 18px; text-decoration: underline;">Hint</h1>
         </div>
         
+        <div onclick="{document.getElementById('levelSelector').style.opacity = 1; document.getElementById('levelSelector').style.zIndex = 1000000} " class="levelSelectorIcon" style="position: absolute; right: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 400px; width: 75px; height: 75px; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
+            <img class="levelSelectorIconImg" style="width: 50px; ">
+        </div>
+
         <div style="position: absolute; right: 100px; width: 400px; height: 300px; background-color: whitesmoke; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
-            <h1 style="text-align: center; position: absolute; top: 0px; width: 100%;">Timer</h1>
+            <h1 id="timerTxtHeader" style="text-align: center; position: absolute; top: 0px; width: 100%;">Timer</h1>
 
             <h1 id="stopwatch" style="text-align: center; color: #485160; font-size: 60px; margin-bottom: 50px; transition: 1s; ">00:00:00</h1>
 
@@ -298,7 +302,7 @@
                 </div> -->
 
                 <div style="width: 100%; display: flex; justify-content: center; margin-top: 50px;">
-                    <img src="loading.gif" style="width: 200px">
+                    <img src="/assets/loading.gif" style="width: 200px">
                 </div>
 
 
@@ -336,18 +340,36 @@
             </div>
         </div>
 
+        <div id="levelSelector" style="width: 100%; height: 100%; background-color: #59657aa3; position: absolute; top: 0px; left: 0px; z-index: -100; opacity: 0; display: flex; justify-content: center; align-items: center; transition: 1s;">
+            <div style="width: 1050px; height: 650px; background-color: #59657a; border-radius: 20px; position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                <h1 onclick="document.getElementById('levelSelector').style.opacity = 0; setTimeout(() => {document.getElementById('levelSelector').style.zIndex = -1000}, 1000);" class="closeBtnLvl" style="position: absolute; top: 0px; right: 30px; transition: 1s;">X</h1>
+                <h1 class="closeBtn" style="position: absolute; top: 50px; transition: 1s; color: whitesmoke;">Level Selector</h1>
+
+                <div id="levelsSelctionContainer" style="width: 80%; flex-direction: row; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+
+                    
+
+                </div>
+
+                
+            </div>
+        </div>
+
     </div>
 </body>
 <script src="/index.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 <script>
     
     var squaresList = []
     var numberSideList = []
 
     var leaderboardList = undefined;
+    var levelsListNumber = []
 
     function init()
     {
+        
         if(running == true)
         {
             if(totalSeconds > 0)
@@ -357,6 +379,12 @@
                 document.getElementById('startBtn').style.opacity = 0.5
                 document.getElementById('startBtn').setAttribute('onclick', '() => {}')
                 revealGrid()
+
+                document.getElementById('hintBtn').setAttribute('onclick', '() => {}')
+                document.getElementById('hintBtn').style.opacity = '0'
+                setTimeout(() => {
+                    document.getElementById('hintBtn').style.display = 'none'
+                }, 1000);
             }
             return
         }
@@ -385,14 +413,25 @@
             }
         }
 
+        const levelDisplay = window.currentLevel
+        if(levelDisplay != undefined)
+        {
+            // grid = JSON.parse(levelDisplay)
+            console.log('loading level: ' + levelDisplay)
+            getLevelGrid(levelDisplay)
 
-        generateGrid2(8,8)
+            Cookies.remove('level')
+
+        }else{
+            generateGrid2(8,8)
+        }
         displayGrid()
         displayNumbers()
 
         startStopwatch()
 
         document.getElementById("startTxt").innerHTML = "End";
+        document.getElementById('hintBtn').style.display = 'flex'
     }
 
     function loadLeaderboardInfo()
@@ -400,11 +439,15 @@
         leaderboardList.sort((a, b) => b.score - a.score);
 
         document.getElementById('LeaderboardContainer').innerHTML = '<h1 style="text-align: center; position: absolute; top: 0px; width: 100%; margin-bottom: 10px;">Leaderboard</h1>'
-
+        
         for (userScoreIndx in leaderboardList)
         {
+            if(userScoreIndx == 8)
+            {
+                break
+            }
             const userScore = leaderboardList[userScoreIndx]
-            console.log(userScore)
+            // console.log(userScore)
 
             const elem = document.createElement('div')
             elem.style = 'width: 99%; height: 60px; position: relative; border-radius: 10px; display: flex; align-items: center; background-color: rgba(255, 255, 255, 0.356); border: dotted 0.1px #48516028; margin-top: 1px; transition: 1s;'    
@@ -459,8 +502,10 @@
         {
             if(document.getElementById('square-'+id).getAttribute('name') != 'selected')
             {
-            
-                document.getElementById('square-' + id).style.backgroundColor = '#ddeef7'
+                if(document.getElementById('square-'+id).getAttribute('name') != 'hint')
+                {
+                    document.getElementById('square-' + id).style.backgroundColor = '#ddeef7'
+                }
             
             }
             const horizontalDistance = (Math.floor(id/8)) 
@@ -472,8 +517,12 @@
             while (true)
             {
                 try{
+
                     if(document.getElementById('square-'+n).getAttribute('name') != 'selected'){
-                        document.getElementById('square-'+n).style.backgroundColor = '#ddeef7'
+                        if(document.getElementById('square-'+n).getAttribute('name') != 'hint')
+                        {
+                            document.getElementById('square-'+n).style.backgroundColor = '#ddeef7'
+                        }
                     }
                     n+=8
                 }catch{
@@ -485,7 +534,10 @@
             while (n < ((8*horizontalDistance) + 8))
             {
                 if(document.getElementById('square-'+n).getAttribute('name') != 'selected'){
-                    document.getElementById('square-'+n).style.backgroundColor = '#ddeef7'
+                    if(document.getElementById('square-'+n).getAttribute('name') != 'hint')
+                    {
+                        document.getElementById('square-'+n).style.backgroundColor = '#ddeef7'
+                    }
                 }
                 n+=1
                 
@@ -496,7 +548,10 @@
         if(state == 'off')
         {
             if(document.getElementById('square-'+id).getAttribute('name') != 'selected'){
-                document.getElementById('square-' + id).style.backgroundColor = 'grey'
+                if(document.getElementById('square-'+id).getAttribute('name') != 'hint')
+                {
+                    document.getElementById('square-' + id).style.backgroundColor = 'grey'
+                }
             }
 
             const horizontalDistance = (Math.floor(id/8)) 
@@ -510,7 +565,10 @@
                 try{
                     if(document.getElementById('square-'+n).getAttribute('name') != 'selected')
                     {
-                        document.getElementById('square-'+n).style.backgroundColor = 'white'
+                        if(document.getElementById('square-'+n).getAttribute('name') != 'hint')
+                        {
+                            document.getElementById('square-'+n).style.backgroundColor = 'white'
+                        }
                     }
                     n+=1
                 }catch{
@@ -520,9 +578,89 @@
         }
     }
 
+    function generateRandomWholeNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
     function revealHint()
     {
-        
+        if(!running)
+        {
+            return
+        }
+        var gridIndx = 0;
+        var notFound = []
+
+        document.getElementById('hintBtn').setAttribute('onclick', '() => {}')
+        document.getElementById('hintBtn').style.opacity = '0'
+        setTimeout(() => {
+            document.getElementById('hintBtn').style.display = 'none'
+        }, 1000);
+
+
+        for (row in grid)
+        {
+            for (column in grid[row])
+            {
+                const itemAnswer = grid[row][column]
+                const itemGuess = playingGrid[row][column]
+
+                if(itemAnswer == 'X')
+                {
+                    if(itemGuess != 'X')
+                    {
+                        
+                        notFound.push(gridIndx)
+                    }
+                }
+
+
+                gridIndx += 1
+
+            }
+        }
+
+        console.log(notFound)
+
+        const revealOneIndx = generateRandomWholeNumber(0, notFound.length - 1)
+        const revealOne = notFound[revealOneIndx]
+        notFound.splice(revealOneIndx, 1)
+
+        console.log(revealOne)
+
+        document.getElementById('square-' + revealOne).style.backgroundColor = '#345eeb'
+        document.getElementById('square-' + revealOne).setAttribute('name', 'hint')
+
+        document.getElementById('square-' + revealOne).style.transform = 'rotateZ(180deg)'
+        document.getElementById('square-' + revealOne).style.transition = '0.9s'
+
+        placeGuess(revealOne)
+
+        setTimeout(() => {
+            document.getElementById('square-' + revealOne).style.transition = '0s'
+        }, 900);
+
+        if(notFound.length > 2)
+        {
+            const revealTwoIndx = generateRandomWholeNumber(0, notFound.length - 1)
+            const revealTwo = notFound[revealTwoIndx]
+            notFound.splice(revealTwoIndx, 1)
+
+            console.log(revealTwo)
+
+            document.getElementById('square-' + revealTwo).style.backgroundColor = '#345eeb'
+            document.getElementById('square-' + revealTwo).setAttribute('name', 'hint')
+    
+            document.getElementById('square-' + revealTwo).style.transform = 'rotateZ(180deg)'
+            document.getElementById('square-' + revealTwo).style.transition = '0.9s'
+
+            setTimeout(() => {
+                document.getElementById('square-' + revealTwo).style.transition = '0s'
+            }, 900);
+
+            placeGuess(revealTwo)
+        }
+
     }
 
     function placeGuess(id)
@@ -531,6 +669,12 @@
         {
             return
         }
+        if(document.getElementById('square-' + id).getAttribute('name') == 'hint')
+        {
+            playingGrid[Math.floor(id/8)][id-(Math.floor(id/8) * 8)] = 'X'
+            return
+        }
+
         if(document.getElementById('square-' + id).getAttribute('name') == 'selected')
         {
             document.getElementById('square-' + id).style.backgroundColor = '#ddeef7'
@@ -571,9 +715,6 @@
 
     function generateGrid()
     {
-        function generateRandomWholeNumber(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
         
         function calculateAmountOnColumn(column)
         {
@@ -681,6 +822,8 @@
 
     function displayNumbers()
     {
+        console.log('DISPLAY NUMBERS')
+        console.log(grid)
         var gridNumbers = []
         for (row in grid)
         {
@@ -688,6 +831,7 @@
             for (column in grid[row])
             {
                 const item = grid[row][column]
+                console.log(item)
                 if(item == 'X')
                 {
                     rowCountX[rowCountX.length-1] += 1 
@@ -789,6 +933,41 @@
                 gridIndx += 1
             }
         }
+    }
+
+    function loadLevel(levelIndex)
+    {
+        if(levelIndex != 'generate')
+        {
+            Cookies.set('level', levelIndex)
+        }
+        location.href = '/'
+    }
+
+    function loadAlllevelsDisplay()
+    {
+        for (n in levelsListNumber)
+        {
+            const lvlData = levelsListNumber[n]
+
+            const elem = document.createElement('div')
+            elem.style = 'width: 75px; height: 75px; border-radius: 20px; display: flex; justify-content: center; align-items: center;'
+            elem.setAttribute('class', 'lvlBtn')
+            elem.setAttribute('id', 'submitBtn')
+            elem.setAttribute('onclick', 'loadLevel(this.children[0].innerHTML)')
+            elem.innerHTML = '<h1 id="sbmtBtn" class="sbmtBtn" style="color: white; transition: 1s; font-size: 35px; text-align: center;">'+lvlData.id+'</h1>'
+            
+            document.getElementById('levelsSelctionContainer').appendChild(elem)
+        }
+
+        const elem = document.createElement('div')
+        elem.style = 'width: 150px; height: 75px; border-radius: 20px; display: flex; justify-content: center; align-items: center;'
+        elem.setAttribute('class', 'lvlBtn')
+        elem.setAttribute('id', 'submitBtn')
+        elem.setAttribute('onclick', 'loadLevel("generate")')
+        elem.innerHTML = '<h1 id="sbmtBtn" class="sbmtBtn" style="color: white; transition: 1s; font-size: 25px; text-align: center;">'+'Generate'+'</h1>'
+        
+        document.getElementById('levelsSelctionContainer').appendChild(elem)
     }
 
     var score;
@@ -924,9 +1103,18 @@
     .startBtn{
         background-color: #485160;
         cursor: pointer;
+        transition: 1s;
     }
     .startBtn:hover{
         background-color: #59657a;
+    }
+    .lvlBtn{
+        background-color: #485160;
+        cursor: pointer;
+        transition: 1s;
+    }
+    .lvlBtn:hover{
+        background-color: #7284a5;
     }
     .sbmtBtn{
         color: #485160;
@@ -942,5 +1130,30 @@
     }
     .closeBtn:hover{
         color: #6b8dc7;
+    }
+
+    .closeBtnLvl{
+        color: whitesmoke;
+        cursor: pointer;
+    }
+    .closeBtnLvl:hover{
+        color: #485160;
+    }
+
+    .levelSelectorIcon{
+        background-color: #f5f5f5;
+        transition: 1s;
+        cursor: pointer;
+        border: dotted #485160 1px;
+    }
+    .levelSelectorIcon:hover{
+        background-color: #485160;
+        border: dotted #f5f5f5 1px;
+        .levelSelectorIconImg{
+            content: url(/assets/whiteLevelSelector.png);
+        }
+    }
+    .levelSelectorIconImg{
+        content: url(/assets/blackLevelSelector.png);
     }
 </style>

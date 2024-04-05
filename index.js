@@ -6,10 +6,11 @@ const supabase = createClient('https://ztofhmkkclizvaqshapf.supabase.co', 'eyJhb
 
 
 
-async function getData()
+async function getData(table)
 {
+    console.log('Fetching data: ' + table)
     const { data, error } = await supabase
-        .from('Leaderboard') // table
+        .from(table) // table
         .select() // collumn
         if(error)
         {
@@ -17,7 +18,6 @@ async function getData()
         }
         if(data)
         {
-            console.log(data)
             return data
         }
 }
@@ -25,7 +25,7 @@ async function getData()
 
 async function getLeaderboardInfo()
 {
-    const LeaderboardInfo = await getData()
+    const LeaderboardInfo = await getData('Leaderboard')
 
     leaderboardList = LeaderboardInfo
 
@@ -34,6 +34,46 @@ async function getLeaderboardInfo()
 
 getLeaderboardInfo()
 
+async function getAllLevelsList()
+{
+    const allGrids = await getData('Grids')
+    allGrids.sort((a, b) => a.id - b.id);
+
+    levelsListNumber = allGrids
+
+    const levelDisplay = Cookies.get('level')
+    if(levelDisplay != undefined)
+    {
+        document.getElementById('timerTxtHeader').innerHTML = 'Timer - Level ' + levelDisplay 
+        window.currentLevel = levelDisplay
+
+        Cookies.remove('level')
+    }
+
+    loadAlllevelsDisplay()
+}
+
+getAllLevelsList()
+
+async function getLevelGrid(level)
+{
+    level = level - 1
+
+    
+    const allGrids = await getData('Grids')
+    allGrids.sort((a, b) => a.id - b.id);
+    console.log(allGrids)
+
+    console.log(allGrids[level].grid)
+
+
+    grid = allGrids[level].grid
+
+    displayNumbers()
+    
+}
+
+window.getLevelGrid = getLevelGrid;
 
 async function submitScore()
 {
