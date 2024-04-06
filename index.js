@@ -44,7 +44,7 @@ async function getAllLevelsList()
     const levelDisplay = Cookies.get('level')
     if(levelDisplay != undefined)
     {
-        document.getElementById('timerTxtHeader').innerHTML = 'Timer - Level ' + levelDisplay 
+        document.getElementById('timerTxtHeader').innerHTML = 'Level ' + levelDisplay 
         window.currentLevel = levelDisplay
 
         Cookies.remove('level')

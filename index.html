@@ -9,7 +9,11 @@
     <div style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
 
         <div style="position: absolute; top: 0px; width: 100%; height: 70px; background-color: #f4f4f4; background-color: #485160; display: flex; justify-content: center; align-items: center;">
-            <h1 style="position: absolute; left: 20px; color: white;">nonogram</h1>
+            <h1 onclick="location.href = '/' " style="position: absolute; left: 20px; color: white; cursor: pointer;">nonogram</h1>
+            
+            <img title="Leaderboard" onclick="location.href = '/leaderboard.html' " src="/assets/leaderboardIcon.png" style="width: 30px; position: absolute; left: 180px; margin-top: 5px; cursor: pointer; z-index: 500; ">
+
+            <img onclick="{document.getElementById('levelSelector').style.opacity = 1; document.getElementById('levelSelector').style.zIndex = 1000000} " title="level Selector" src="/assets/whiteLevelSelector.png" style="width: 30px; position: absolute; left: 220px; margin-top: 5px; cursor: pointer; z-index: 500; ">
         </div>
 
 
@@ -266,19 +270,15 @@
         </div>
 
         <div onclick="revealHint()" id="hintBtn" style="width: 200px; height: 30px; bottom: 15px; position: absolute; bottom: 210px; border-radius: 10px; display: none; justify-content: center; align-items: center; transition: 1s; opacity: 1;">
-            <h1 class="sbmtBtn" style="transition: 1s; font-size: 22px; text-align: center; width: 100%; height: 100%; margin-top: 18px; text-decoration: underline;">Hint</h1>
-        </div>
-        
-        <div onclick="{document.getElementById('levelSelector').style.opacity = 1; document.getElementById('levelSelector').style.zIndex = 1000000} " class="levelSelectorIcon" style="position: absolute; right: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 400px; width: 75px; height: 75px; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
-            <img class="levelSelectorIconImg" style="width: 50px; ">
+            <h1 id="hintTxt" class="sbmtBtn" style="transition: 1s; font-size: 22px; text-align: center; width: 100%; height: 100%; margin-top: 18px;"> <span style="text-decoration: none;" >Hints</span>: <span id="hintsCountTxt">5</span> </h1>
         </div>
 
-        <div style="position: absolute; right: 100px; width: 400px; height: 300px; background-color: whitesmoke; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
-            <h1 id="timerTxtHeader" style="text-align: center; position: absolute; top: 0px; width: 100%;">Timer</h1>
+        <h1 id="timerTxtHeader" style="text-align: center; position: absolute; top: -7px; width: 100%; color: whitesmoke;"></h1>
+        <div style="position: absolute; right: 100px; width: 400px; height: 90px; background-color: whitesmoke; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
 
             <h1 id="stopwatch" style="text-align: center; color: #485160; font-size: 60px; margin-bottom: 50px; transition: 1s; ">00:00:00</h1>
 
-            <div style="width: 100%; display: flex; justify-content: center; position: absolute; bottom: 10px;">
+            <div style="width: 100%; display: flex; justify-content: center; position: absolute; bottom: -100px;">
                 <div onclick="init()" class="startBtn" id="startBtn" style="width: 150px; height: 50px; bottom: 15px; position: relative; border-radius: 20px; display: flex; justify-content: center; align-items: center;">
                     <h1 id="startTxt" style="color: white; transition: 1s; font-size: 25px; text-align: center; position: absolute; width: 100%; height: 100%; margin-top: 35px;">Start</h1>
                 </div>
@@ -286,7 +286,7 @@
 
         </div>
 
-        <div style="position: absolute; left: 100px; width: 400px; height: 600px; background-color: whitesmoke; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
+        <div style="position: absolute; left: 100px; width: 400px; height: 600px; background-color: whitesmoke; border-radius: 20px; display: flex; justify-content: center; flex-direction: column; display: none;">
             <div id="LeaderboardContainer" style="width: 100%; height: 80%; display: flex; justify-content: start; align-items: start; flex-direction: column;">
                 <!-- <h1 style="text-align: center; position: absolute; top: 0px; width: 100%; margin-bottom: 10px;">Leaderboard</h1> -->
     
@@ -308,6 +308,30 @@
 
             </div>
 
+        </div>
+
+        <div style="position: absolute; left: 100px; width: 400px; height: 600px; background-color: whitesmoke; border-radius: 20px; display: flex; justify-content: center; flex-direction: column;">
+            <h1 style="text-align: center; position: absolute; top: 0px; width: 100%; margin-bottom: 10px; text-decoration: underline;">Rules</h1>
+            <div style="display: flex; justify-content: center; width: 100%; height: 100%; margin-top: 150px; ">
+                <div style="width: 90%; height: 80%; display: flex; justify-content: start; align-items: start; flex-direction: column; overflow-y: scroll; gap: 20px;">
+    
+                    <li style="font-size: 20px; text-align: center;">Nonogram is a puzzle game played on a grid</li>
+
+                    <li style="font-size: 20px; text-align: center;">Each row and column of the grid has a sequence of numbers representing the lengths of consecutive filled cells</li>
+
+                    <li style="font-size: 20px; text-align: center;">Fill in the grid based on these numbers</li>
+
+                    <li style="font-size: 20px; text-align: center;">Numbers indicate groups of consecutive filled cells, separated by at least one empty cell.</li>
+
+                    <li style="font-size: 20px; text-align: center;">Use logic to deduce which cells should be filled and which should be empty</li>
+
+                    <li style="font-size: 20px; text-align: center;">Mark cells you are sure are filled</li>
+
+                    <li style="font-size: 20px; text-align: center;">In the end, you'll get a score based on how much you got right and how quickly you finished</li>
+
+
+                </div>
+            </div>
         </div>
 
         <div id="resultScore" style="width: 100%; position: absolute; bottom: 20px; display: none; justify-content: center;">
@@ -582,6 +606,7 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
+    var hintCount = 5;
     function revealHint()
     {
         if(!running)
@@ -591,11 +616,18 @@
         var gridIndx = 0;
         var notFound = []
 
-        document.getElementById('hintBtn').setAttribute('onclick', '() => {}')
-        document.getElementById('hintBtn').style.opacity = '0'
-        setTimeout(() => {
-            document.getElementById('hintBtn').style.display = 'none'
-        }, 1000);
+        hintCount -= 1
+        document.getElementById('hintsCountTxt').innerHTML = hintCount
+
+        if(hintCount == 0)
+        {
+            document.getElementById('hintBtn').setAttribute('onclick', '() => {}')
+            document.getElementById('hintBtn').style.opacity = '0'
+            setTimeout(() => {
+                document.getElementById('hintBtn').style.display = 'none'
+            }, 1000);
+        }
+
 
 
         for (row in grid)
@@ -1156,4 +1188,19 @@
     .levelSelectorIconImg{
         content: url(/assets/blackLevelSelector.png);
     }
+
+    *::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: rgb(255, 255, 255);
+            border-radius: 20px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: #485160;
+            border-radius: 20px;
+            border: transparent;
+        }
 </style>
