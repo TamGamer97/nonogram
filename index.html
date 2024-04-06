@@ -672,27 +672,6 @@
             document.getElementById('square-' + revealOne).style.transition = '0s'
         }, 900);
 
-        if(notFound.length > 2)
-        {
-            const revealTwoIndx = generateRandomWholeNumber(0, notFound.length - 1)
-            const revealTwo = notFound[revealTwoIndx]
-            notFound.splice(revealTwoIndx, 1)
-
-            console.log(revealTwo)
-
-            document.getElementById('square-' + revealTwo).style.backgroundColor = '#345eeb'
-            document.getElementById('square-' + revealTwo).setAttribute('name', 'hint')
-    
-            document.getElementById('square-' + revealTwo).style.transform = 'rotateZ(180deg)'
-            document.getElementById('square-' + revealTwo).style.transition = '0.9s'
-
-            setTimeout(() => {
-                document.getElementById('square-' + revealTwo).style.transition = '0s'
-            }, 900);
-
-            placeGuess(revealTwo)
-        }
-
     }
 
     function placeGuess(id)
