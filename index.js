@@ -54,6 +54,7 @@ async function getAllLevelsList()
 }
 
 getAllLevelsList()
+window.getAllLevelsList = getAllLevelsList
 
 async function getLevelGrid(level)
 {

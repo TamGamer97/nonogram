@@ -1060,17 +1060,35 @@
 
     function loadAlllevelsDisplay()
     {
+        document.getElementById('levelsSelctionContainer').innerHTML = ''
+
+        var lp = Cookies.get('levelProgress')
+        if(lp == undefined)
+        {
+            Cookies.set('levelProgress', 1)
+            lp = 1
+        }
+        lp = JSON.parse(lp)
+
+
         for (n in levelsListNumber)
         {
             const lvlData = levelsListNumber[n]
 
             const elem = document.createElement('div')
-            elem.style = 'width: 75px; height: 75px; border-radius: 20px; display: flex; justify-content: center; align-items: center;'
-            elem.setAttribute('class', 'lvlBtn')
+            elem.style = 'width: 75px; height: 75px; border-radius: 20px; display: flex; justify-content: center; align-items: center; cursur: pointer;'
             elem.setAttribute('id', 'submitBtn')
-            elem.setAttribute('onclick', 'loadLevel(this.children[0].innerHTML)')
             elem.innerHTML = '<h1 id="sbmtBtn" class="sbmtBtn" style="color: white; transition: 1s; font-size: 35px; text-align: center;">'+lvlData.id+'</h1>'
             
+            if(lvlData.id > lp)
+            {
+                elem.style.opacity = 0.3
+                elem.style.backgroundColor = '#485160'
+            }else{
+                elem.setAttribute('onclick', 'loadLevel(this.children[0].innerHTML)')
+                elem.setAttribute('class', 'lvlBtn')
+            }
+
             document.getElementById('levelsSelctionContainer').appendChild(elem)
         }
 
@@ -1132,6 +1150,20 @@
         console.log('X Percentage: ' + correctPercentage)
         console.log('Time (s): ' + totalSeconds)
         console.log('Score: ' + score)
+
+        if(correctPercentage >= 50)
+        {
+            if(window.currentLevel != undefined)
+            {
+                var lp = Cookies.get('levelProgress')
+                lp = JSON.parse(lp)
+                if(window.currentLevel == lp)
+                {
+                    Cookies.set('levelProgress', (JSON.parse(window.currentLevel) + 1))
+                    getAllLevelsList()
+                }
+            }
+        }
 
         document.getElementById('resultScore').style.display = 'flex'
         document.getElementById('percentageCorrect').innerHTML = correctPercentage.toFixed(2) + '%'
